@@ -95,7 +95,7 @@ class MyStrategy:
             "trade_update_callback": self.on_event_trade_update
         }
         self.market = Market(**cc)
-                
+
         # 60秒执行1次
         LoopRunTask.register(self.on_ticker, 10)
 

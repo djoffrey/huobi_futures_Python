@@ -42,10 +42,10 @@ class HuobiUsdtSwapRestAPI:
 
     async def get_swap_info(self, contract_code=None):
         """ Get Swap Info
-        
+
         Args:
             contract_code:  such as "BTC-USDT".
-        
+
         Returns:
             success: Success results, otherwise it's None.
             error: Error information, otherwise it's None.
@@ -96,7 +96,7 @@ class HuobiUsdtSwapRestAPI:
         }
         success, error = await self.request("GET", uri, params=params)
         return success, error
-    
+
     async def get_klines(self, contract_code, period, size=None, sfrom=None, to=None):
         """ Get kline information.
 
@@ -122,13 +122,13 @@ class HuobiUsdtSwapRestAPI:
             params["to"] = to
         success, error = await self.request("GET", uri, params=params)
         return success, error
-    
+
     async def get_merged_data(self, contract_code):
         """ Get Merged Data.
 
         Args:
             contract_code: such as "BTC-USDT"
-        
+
         Returns:
             success: Success results.
             error: Error information.
@@ -145,7 +145,7 @@ class HuobiUsdtSwapRestAPI:
 
         Args:
             contract_code: such as "BTC-USDT"
-        
+
         Returns:
             success: Success results.
             error: Error information.
@@ -190,7 +190,7 @@ class HuobiUsdtSwapRestAPI:
             body["contract_code"] = contract_code
         success, error = await self.request("POST", uri, body=body, auth=True)
         return success, error
-    
+
     async def get_account_position(self, contract_code):
         """ Get position and account information.
 
@@ -235,27 +235,26 @@ class HuobiUsdtSwapRestAPI:
         }
         if client_order_id:
             body.update({"client_order_id": client_order_id})
-        
+
         success, error = await self.request("POST", uri, body=body, auth=True)
         return success, error
-    
+
     async def create_orders(self, orders_data):
         """ Batch Create orders.
             orders_data = {'orders_data': [
-               {  
-                'contract_code':'BTC-USDT',  'client_order_id':'', 
-                'price':1, 'volume':1, 'direction':'buy', 'offset':'open', 
+               {
+                'contract_code':'BTC-USDT',  'client_order_id':'',
+                'price':1, 'volume':1, 'direction':'buy', 'offset':'open',
                 'leverRate':20, 'orderPriceType':'limit'},
-               { 
-                'contract_code':'BTC-USDT', 'client_order_id':'', 
-                'price':2, 'volume':2, 'direction':'buy', 'offset':'open', 
-                'leverRate':20, 'orderPriceType':'limit'}]}   
+               {
+                'contract_code':'BTC-USDT', 'client_order_id':'',
+                'price':2, 'volume':2, 'direction':'buy', 'offset':'open',
+                'leverRate':20, 'orderPriceType':'limit'}]}
         """
         uri = "/linear-swap-api/v1/swap_batchorder"
         body = orders_data
         success, error = await self.request("POST", uri, body=body, auth=True)
         return success, error
-        
 
     async def revoke_order(self, contract_code, order_id=None, client_order_id=None):
         """ Revoke an order.
@@ -347,7 +346,7 @@ class HuobiUsdtSwapRestAPI:
 
         success, error = await self.request("POST", uri, body=body, auth=True)
         return success, error
-    
+
     async def get_order_detail(self, contract_code, order_id, created_at=None, order_type=None, page_index=1, page_size=20):
         """ Get Order Detail
 
@@ -358,13 +357,13 @@ class HuobiUsdtSwapRestAPI:
             order_type: order type, 1. Quotation; 2. Cancelled order; 3. Forced liquidation; 4. Delivery Order
             page_index: page idnex. 1 default.
             page_size: page size. 20 default. 50 max.
-        Note: 
-            When getting information on order cancellation via query order detail interface, 
-            users who type in parameters “created_at” and “order_type” can query last 24-hour data, 
+        Note:
+            When getting information on order cancellation via query order detail interface,
+            users who type in parameters “created_at” and “order_type” can query last 24-hour data,
             while users who don’t type in parameters “created_at” and “order_type” can only query last 12-hour data.
-            created_at should use timestamp of long type as 13 bits (include Millisecond), 
+            created_at should use timestamp of long type as 13 bits (include Millisecond),
             if send the accurate timestamp for "created_at", query performance will be improved.
-            eg. the timestamp "2019/10/18 10:26:22" can be changed：1571365582123.It can also directly 
+            eg. the timestamp "2019/10/18 10:26:22" can be changed：1571365582123.It can also directly
             obtain the timestamp（ts) from the returned ordering interface(swap_order) to query the corresponding
             orders.
         """
@@ -402,7 +401,7 @@ class HuobiUsdtSwapRestAPI:
         }
         success, error = await self.request("POST", uri, body=body, auth=True)
         return success, error
-    
+
     async def get_history_orders(self, contract_code, trade_type, stype, status, \
         create_date, page_index=0, page_size=50):
         """ Get history orders information.
@@ -417,7 +416,7 @@ class HuobiUsdtSwapRestAPI:
                 within the last 90 days by default.
             page_index: default 1st page
             page_size: default page size 20. 50 max.
-        
+
         Returns:
             success: Success results, otherwise it's None.
             error: Error information, otherwise it's None.
@@ -462,7 +461,7 @@ class HuobiUsdtSwapRestAPI:
             to: 'spot' or 'linear-swap'
             currency: "usdt",
             margin-account: "BTC-USDT"
-            
+
         """
         body = {
                 "from": from_,
@@ -476,7 +475,135 @@ class HuobiUsdtSwapRestAPI:
         success, error = await self.request("POST", uri, body=body, auth=True)
         return success, error
 
-    
+
+    async def create_trigger_order(self, contract_code, trigger_type, \
+        trigger_price, order_price, order_price_type, volume, direction, offset, lever_rate):
+        """ Create trigger order
+
+        Args:
+            contract_code: contract code,such as BTC190903. If filled,the above symbol and contract_type will be ignored.
+            trigger_type: trigger type,such as ge,le.
+            trigger_price: trigger price.
+            order_price: order price.
+            order_price_type: "limit" by default."optimal_5"\"optimal_10"\"optimal_20"
+            volume: volume.
+            direction: "buy" or "sell".
+            offset: "open" or "close".
+            lever_rate: lever rate.
+
+        Returns:
+            refer to https://huobiapi.github.io/docs/dm/v1/cn/#97a9bd626d
+
+        """
+        uri = "/linear-swap-api/v1/contract_trigger_order"
+        body = {
+            "contract_code": contract_code,
+            "trigger_type": trigger_type,
+            "trigger_price": trigger_price,
+            "order_price": order_price,
+            "order_price_type": order_price_type,
+            "volume": volume,
+            "direction": direction,
+            "offset": offset,
+            "lever_rate": lever_rate
+        }
+
+        success, error = await self.request("POST", uri, body=body, auth=True)
+        return success, error
+
+    async def revoke_trigger_order(self, contract_code, order_id):
+        """ Revoke trigger order
+
+        Args:
+            contract_code: symbol,such as "BTC-USDT".
+            order_id: order ids.multiple orders need to be joined by ','.
+
+        Returns:
+            refer to https://huobiapi.github.io/docs/dm/v1/cn/#0d42beab34
+
+        """
+        uri = "/linear-swap-api/v1/contract_trigger_cancel"
+        body = {
+            "contract_code": contract_code,
+            "order_id": order_id
+        }
+
+        success, error = await self.request("POST", uri, body=body, auth=True)
+        return success, error
+
+    async def revoke_all_trigger_orders(self, contract_code):
+        """ Revoke all trigger orders
+
+        Args:
+            contract_code: contract_code, such as BTC180914.
+
+        Returns:
+            refer to https://huobiapi.github.io/docs/dm/v1/cn/#3d2471d520
+
+        """
+        uri = "/linear-swap-api/v1/contract_trigger_cancelall"
+        body = {
+            "contract_code": contract_code
+        }
+
+        success, error = await self.request("POST", uri, body=body, auth=True)
+        return success, error
+
+    async def get_trigger_openorders(self, contract_code, page_index=None, page_size=None):
+        """ Get trigger openorders
+        Args:
+            contract_code: contract code, such as BTC180914.
+            page_index: page index.1 by default.
+            page_size: page size.20 by default.
+
+        Returns:
+            refer to https://huobiapi.github.io/docs/dm/v1/cn/#b5280a27b3
+        """
+
+        uri = "/linear-swap-api/v1/swap_trigger_openorders"
+        body = {
+            "contract_code": contract_code
+        }
+        if page_index:
+            body.update({"page_index": page_index})
+        if page_size:
+            body.update({"page_size": page_size})
+
+        success, error = await self.request("POST", uri, body=body, auth=True)
+        return success, error
+
+    async def get_trigger_hisorders(self, contract_code, status, create_date, page_index=None, page_size=None):
+        """ Get trigger hisorders
+
+        Args:
+            contract_code: contract code.
+            trade_type: trade type. 0:all 1:open buy 2:open sell 3:close buy 4:close sell
+            status: status. 0: orders finished. 4: orders submitted. 5: order filled. 6:order cancelled. multiple status is joined by ','
+            create_date: days. such as 1-90.
+            page_index: 1 by default.
+            page_size: 20 by default.50 at most.
+
+        Returns:
+            https://huobiapi.github.io/docs/dm/v1/cn/#37aeb9f3bd
+
+        """
+
+        uri = "/linear-swap-api/v1/swap_trigger_hisorders"
+        body = {
+            "contract_code": contract_code,
+            "trade_type": trade_type,
+            "status": status,
+            "create_date": create_date,
+        }
+        if page_index:
+            body.update({"page_index": page_index})
+        if page_size:
+            body.update({"page_size": page_size})
+
+        success, error = await self.request("POST", uri, body=body, auth=True)
+        return success, error
+
+
     async def request(self, method, uri, params=None, body=None, headers=None, auth=False):
         """ Do HTTP request.
 
