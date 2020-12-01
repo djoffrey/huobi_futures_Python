@@ -495,7 +495,7 @@ class HuobiUsdtSwapRestAPI:
             refer to https://huobiapi.github.io/docs/dm/v1/cn/#97a9bd626d
 
         """
-        uri = "/linear-swap-api/v1/contract_trigger_order"
+        uri = "/linear-swap-api/v1/swap_trigger_order"
         body = {
             "contract_code": contract_code,
             "trigger_type": trigger_type,
@@ -522,7 +522,8 @@ class HuobiUsdtSwapRestAPI:
             refer to https://huobiapi.github.io/docs/dm/v1/cn/#0d42beab34
 
         """
-        uri = "/linear-swap-api/v1/contract_trigger_cancel"
+
+        uri = "/linear-swap-api/v1/swap_trigger_cancel"
         body = {
             "contract_code": contract_code,
             "order_id": order_id
@@ -541,7 +542,7 @@ class HuobiUsdtSwapRestAPI:
             refer to https://huobiapi.github.io/docs/dm/v1/cn/#3d2471d520
 
         """
-        uri = "/linear-swap-api/v1/contract_trigger_cancelall"
+        uri = "/linear-swap-api/v1/swap_trigger_cancelall"
         body = {
             "contract_code": contract_code
         }
