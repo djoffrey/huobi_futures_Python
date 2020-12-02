@@ -78,5 +78,8 @@ class Config:
         for k, v in update_fields.items():
             setattr(self, k, v)
 
+    def get(self, k, defval=None):
+        return getattr(self, k, defval)
+    
 
 config = Config()
