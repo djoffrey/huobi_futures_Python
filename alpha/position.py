@@ -45,6 +45,8 @@ class Position:
         self.maint_margin_ratio = maint_margin_ratio #  保证金率
         self.utime = utime if utime else tools.get_cur_timestamp_ms()
 
+        self.raw_data = None
+
     def update(self, short_quantity=0, short_avg_price=0, long_quantity=0, long_avg_price=0, liquid_price=0,
                utime=None):
         self.short_quantity = short_quantity

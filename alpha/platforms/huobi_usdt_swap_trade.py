@@ -540,6 +540,7 @@ class HuobiUsdtSwapTrade(Websocket):
         Returns:
             None.
         """
+        self._position.raw_data = data["data"]
         for position_info in data["data"]:
             if position_info["contract_code"] != self._symbol:
                 continue
