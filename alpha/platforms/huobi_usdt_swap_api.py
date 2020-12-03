@@ -553,12 +553,44 @@ class HuobiUsdtSwapRestAPI:
     async def get_trigger_openorders(self, contract_code, page_index=None, page_size=None):
         """ Get trigger openorders
         Args:
-            contract_code: contract code, such as BTC180914.
-            page_index: page index.1 by default.
-            page_size: page size.20 by default.
+        请求参数
+        参数名称	是否必须	类型	描述	取值范围
+        contract_code	true	string	合约代码	BTC-USDT
+        page_index	false	int	第几页，不填默认第一页
+        page_size	false	int	不填默认20，不得多于50
 
         Returns:
             refer to https://huobiapi.github.io/docs/dm/v1/cn/#b5280a27b3
+
+        {
+        "status": "ok",
+        "data": {
+        "orders": [
+            {
+                "symbol": "BTC",
+                "contract_code": "BTC-USDT",
+                "trigger_type": "ge",
+                "volume": 1.000000000000000000,
+                "order_type": 1,
+                "direction": "sell",
+                "offset": "open",
+                "lever_rate": 10,
+                "order_id": 4,
+                "order_id_str": "4",
+                "order_source": "api",
+                "trigger_price": 13900.000000000000000000,
+                "order_price": 13900.000000000000000000,
+                "created_at": 1603705215654,
+                "order_price_type": "limit",
+                "status": 2
+            }
+        ],
+        "total_page": 1,
+        "current_page": 1,
+        "total_size": 1
+        },
+        "ts": 1603705219567
+        }
         """
 
         uri = "/linear-swap-api/v1/swap_trigger_openorders"
@@ -603,6 +635,50 @@ class HuobiUsdtSwapRestAPI:
 
         success, error = await self.request("POST", uri, body=body, auth=True)
         return success, error
+
+    async def lightning_close_position(self, contract_code, volume, direction, client_order_id=None, \
+                                       order_price_type=None):
+        """ Close position.
+
+        Args:
+        请求参数
+        参数名称	是否必须	类型	描述	取值范围
+        contract_code	true	string	合约代码	"BTC-USDT"...
+        volume	true	long	委托数量（张）	
+        direction	true	string	买卖方向	“buy”:买，“sell”:卖
+        client_order_id	false	long	（API）客户自己填写和维护，必须保持唯一	
+        order_price_type	false	string	订单报价类型	不填，默认为“闪电平仓”，"lightning"：闪电平仓，"lightning_ioc"：闪电平仓-IOC，"lightning_fok"：闪电平仓-FOK
+
+        Returns:
+            https://docs.huobigroup.com/docs/dm/v1/cn/#669c2a2e3d
+
+        {
+        "status": "ok",
+        "data": {
+        "order_id": 9861634,
+        "order_id_str": "9861634",
+        "client_order_id": 9086
+        },
+        "ts": 158797866555
+        }
+
+        """
+        uri = "/linear-swap-api/v1/lightning_close_position"
+        body = {
+            "contract_code": contract_code,
+            "volume": volume,
+            "direction": direction,
+        }
+
+        if client_order_id:
+            body.update({"client_order_id": client_order_id})
+
+        if order_price_type:
+            body.update({"order_price_type": order_price_type})
+
+        success, error = await self.request("POST", uri, body=body, auth=True)
+        return success, error
+
 
 
     async def request(self, method, uri, params=None, body=None, headers=None, auth=False):
