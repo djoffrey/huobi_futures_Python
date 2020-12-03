@@ -663,7 +663,7 @@ class HuobiUsdtSwapRestAPI:
         }
 
         """
-        uri = "/linear-swap-api/v1/lightning_close_position"
+        uri = "/linear-swap-api/v1/swap_lightning_close_position"
         body = {
             "contract_code": contract_code,
             "volume": volume,
