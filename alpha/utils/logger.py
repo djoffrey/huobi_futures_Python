@@ -17,7 +17,11 @@ import traceback
 from logging.handlers import TimedRotatingFileHandler
 
 initialized = False
-
+try:
+    import coloredlogs
+    use_colorlog=True
+except ImportError:
+    use_colorlog=False
 
 def initLogger(log_level="DEBUG", log_path=None, logfile_name=None, clear=False, backup_count=0):
     """ 初始化日志输出
@@ -43,6 +47,8 @@ def initLogger(log_level="DEBUG", log_path=None, logfile_name=None, clear=False,
     fmt_str = "%(levelname)1.1s [%(asctime)s] %(message)s"
     fmt = logging.Formatter(fmt=fmt_str, datefmt=None)
     handler.setFormatter(fmt)
+    if use_colorlog:
+        coloredlogs.install(level='INFO', logger=logger)
     logger.addHandler(handler)
 
 

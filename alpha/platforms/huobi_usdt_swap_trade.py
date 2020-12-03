@@ -540,6 +540,8 @@ class HuobiUsdtSwapTrade(Websocket):
         Returns:
             None.
         """
+        # position data should always contain 'buy' and 'sell'
+        # otherwise would cause error
         self._position.raw_data = data["data"]
         for position_info in data["data"]:
             if position_info["contract_code"] != self._symbol:
