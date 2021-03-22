@@ -207,7 +207,7 @@ class HuobiUsdtSwapRestAPI:
         return success, error
 
     async def create_order(self, contract_code, price, quantity, direction, offset, lever_rate,
-                           order_price_type, client_order_id=None):
+                           order_price_type, client_order_id=None, **kwargs):
         """ Create an new order.
 
         Args:
@@ -235,6 +235,10 @@ class HuobiUsdtSwapRestAPI:
         }
         if client_order_id:
             body.update({"client_order_id": client_order_id})
+
+        for (k,v) in kwargs.items():
+            if kwargs.get(k) is not None:
+                body.update({k: v})
 
         success, error = await self.request("POST", uri, body=body, auth=True)
         return success, error
