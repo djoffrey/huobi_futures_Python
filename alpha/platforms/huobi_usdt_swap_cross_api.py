@@ -480,7 +480,79 @@ class HuobiUsdtSwapCrossRestAPI:
         success, error = await self.request("POST", uri, body=body, auth=True)
         return success, error
 
+    async def create_trigger_order(self, contract_code, trigger_type, \
+        trigger_price, order_price, order_price_type, volume, direction, offset, lever_rate):
+        """ Create trigger order
 
+        Args:
+            contract_code: contract code,such as BTC190903. If filled,the above symbol and contract_type will be ignored.
+            trigger_type: trigger type,such as ge,le.
+            trigger_price: trigger price.
+            order_price: order price.
+            order_price_type: "limit" by default."optimal_5"\"optimal_10"\"optimal_20"
+            volume: volume.
+            direction: "buy" or "sell".
+            offset: "open" or "close".
+            lever_rate: lever rate.
+
+        Returns:
+            refer to https://huobiapi.github.io/docs/dm/v1/cn/#97a9bd626d
+
+        """
+        uri = "/linear-swap-api/v1/swap_cross_trigger_order"
+        body = {
+            "contract_code": contract_code,
+            "trigger_type": trigger_type,
+            "trigger_price": trigger_price,
+            "order_price": order_price,
+            "order_price_type": order_price_type,
+            "volume": volume,
+            "direction": direction,
+            "offset": offset,
+            "lever_rate": lever_rate
+        }
+
+        success, error = await self.request("POST", uri, body=body, auth=True)
+        return success, error
+
+    async def revoke_trigger_order(self, contract_code, order_id):
+        """ Revoke trigger order
+
+        Args:
+            contract_code: symbol,such as "BTC-USDT".
+            order_id: order ids.multiple orders need to be joined by ','.
+
+        Returns:
+            refer to https://huobiapi.github.io/docs/dm/v1/cn/#0d42beab34
+
+        """
+
+        uri = "/linear-swap-api/v1/swap_cross_trigger_cancel"
+        body = {
+            "contract_code": contract_code,
+            "order_id": order_id
+        }
+
+        success, error = await self.request("POST", uri, body=body, auth=True)
+        return success, error
+
+    async def revoke_all_trigger_orders(self, contract_code):
+        """ Revoke all trigger orders
+
+        Args:
+            contract_code: contract_code, such as BTC180914.
+
+        Returns:
+            refer to https://huobiapi.github.io/docs/dm/v1/cn/#3d2471d520
+
+        """
+        uri = "/linear-swap-api/v1/swap_cross_trigger_cancelall"
+        body = {
+            "contract_code": contract_code
+        }
+
+        success, error = await self.request("POST", uri, body=body, auth=True)
+        return success, error
 
     async def get_trigger_openorders(self, contract_code, page_index=None, page_size=None):
         """ Get trigger openorders
@@ -567,6 +639,7 @@ class HuobiUsdtSwapCrossRestAPI:
 
         success, error = await self.request("POST", uri, body=body, auth=True)
         return success, error
+
 
     async def lightning_close_position(self, contract_code, volume, direction, client_order_id=None, \
                                        order_price_type=None):
